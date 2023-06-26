@@ -26,20 +26,23 @@ const S001GuardForm = () => {
     return (
         <div>
             <Form onFinish={handleSubmit}>
-                <Form.Item
-                    label="Upload"
-                    name="upload"
-                    valuePropName="fileList"
-                    getValueFromEvent={normFile}
-                    rules={[{ required: true, message: 'Please upload an image' }]}
-                >
-                    <Upload action="/upload" listType="picture-card">
-                        <div>
-                            <PlusOutlined />
-                            <div style={{ marginTop: 8 }}>Upload</div>
-                        </div>
-                    </Upload>
-                </Form.Item>
+                <Space direction={"vertical"}>
+                    Material Received by at Factory:
+                    <Form.Item
+                        label="GuardUpload"
+                        name="guard_upload"
+                        valuePropName="fileList"
+                        getValueFromEvent={normFile}
+                    // rules={[{ required: true, message: 'Please upload an image' }]}
+                    >
+                        <Upload action="/upload" listType="picture-card">
+                            <div>
+                                <PlusOutlined />
+                                <div style={{ marginTop: 8 }}>Upload</div>
+                            </div>
+                        </Upload>
+                    </Form.Item>
+                </Space>
 
                 <Form.Item>
                     <Button type="primary" htmlType="submit">Submit</Button>

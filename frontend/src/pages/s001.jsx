@@ -5,6 +5,7 @@ import { Button } from 'antd';
 import './s001.css';
 import S001DriverForm from './forms/s001/s001-driver-form';
 import S001GuardForm from './forms/s001/s001-guard-form';
+import S001FullForm from './forms/s001/s001-full-form';
 
 
 
@@ -58,7 +59,8 @@ const S001 = () => {
             </div>
             <div className="content">
                 {/* {displayForm && <S001DriverForm />} */}
-                <S001GuardForm />
+                {/* <S001GuardForm /> */}
+                <S001FullForm />
             </div>
         </div>
     );

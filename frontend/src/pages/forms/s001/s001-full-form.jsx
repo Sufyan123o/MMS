@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import dayjs from 'dayjs';
+import { PlusOutlined } from '@ant-design/icons';
 import {
     Button,
     Checkbox,
@@ -9,12 +10,14 @@ import {
     Input,
     InputNumber,
     notification,
+    Popconfirm,
     Table,
     TimePicker,
     Upload,
     Space,
     Select,
 } from 'antd';
+const { TextArea } = Input;
 
 
 const truckContentsColumn = [
@@ -96,8 +99,20 @@ const selectBeforeCurrency = (
     </Select>
 );
 
+const selectAfterWeight = (
+    <Select
+        defaultValue="kg"
+        style={{
+            width: 60,
+        }}
+    >
+        <Option value="kg">kg</Option>
+        <Option value="lbs">lbs</Option>
+    </Select>
+);
 
-const S001DriverForm = () => {
+
+const S001FullForm = () => {
     // deals with form stuff
     const initVals = {
         date: dayjs(),
@@ -105,16 +120,16 @@ const S001DriverForm = () => {
     }
 
     const handleFormSubmit = (values) => {
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(values)
-        };
+        // const requestOptions = {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify(values)
+        // };
 
-        fetch("api/s001-driver-form", requestOptions)
-            .then(response => response.json())
-            .then(data => console.log(data));
-
+        // fetch("api/s001-driver-form", requestOptions)
+        //     .then(response => response.json())
+        //     .then(data => console.log(data));
+        openNotification(values);
     };
 
 
@@ -151,9 +166,9 @@ const S001DriverForm = () => {
         </Form.Item>
     );
 
-    const InputTableItem = ({ label }) => (
+    const InputTableItem = ({ label, styles }) => (
         <Form.Item name={label} noStyle>
-            <Input style={{ width: 400 }} placeholder="Please input" />
+            <Input style={styles} placeholder="Please input" />
         </Form.Item>
     );
 
@@ -162,77 +177,40 @@ const S001DriverForm = () => {
             key: "Spare Tyre",
             departure: <CheckboxTableItem label="spare_tyre_departure" />,
             arrival: <CheckboxTableItem label="spare_tyre_arrival" />,
-            truck_comments: <InputTableItem label="spare_tyre_truck_comments" />
+            truck_comments: <InputTableItem label="spare_tyre_truck_comments" styles={{ width: 400 }} />
         },
         {
             key: "Jack & handle",
             departure: <CheckboxTableItem label="jack_handle_departure" />,
             arrival: <CheckboxTableItem label="jack_handle_arrival" />,
-            truck_comments: <InputTableItem label="jack_handle_truck_comments" />
+            truck_comments: <InputTableItem label="jack_handle_truck_comments" styles={{ width: 400 }} />
         },
         {
             key: "Wheel spanner",
             departure: <CheckboxTableItem label="wheel_spanner_departure" />,
             arrival: <CheckboxTableItem label="wheel_spanner_arrival" />,
-            truck_comments: <InputTableItem label="wheel_spanner_truck_comments" />
+            truck_comments: <InputTableItem label="wheel_spanner_truck_comments" styles={{ width: 400 }} />
         },
         {
             key: "Life savers",
             departure: <CheckboxTableItem label="life_savers_departure" />,
             arrival: <CheckboxTableItem label="life_savers_arrival" />,
-            truck_comments: <InputTableItem label="life_savers_truck_comments" />
+            truck_comments: <InputTableItem label="life_savers_truck_comments" styles={{ width: 400 }} />
         },
         {
             key: "Tarpaulin",
             departure: <CheckboxTableItem label="tarpaulin_departure" />,
             arrival: <CheckboxTableItem label="tarpaulin_arrival" />,
-            truck_comments: <InputTableItem label="tarpaulin_truck_comments" />
+            truck_comments: <InputTableItem label="tarpaulin_truck_comments" styles={{ width: 400 }} />
         },
         {
             key: "Sterio",
             departure: <CheckboxTableItem label="sterio_departure" />,
             arrival: <CheckboxTableItem label="sterio_arrival" />,
-            truck_comments: <InputTableItem label="sterio_truck_comments" />
+            truck_comments: <InputTableItem label="sterio_truck_comments" styles={{ width: 400 }} />
         },
     ];
 
-
-    // stuff for tyre condition table
-    const NumberInputTableItem = ({ label }) => (
-        <Form.Item name={label} noStyle>
-            <InputNumber
-                style={{ width: 100 }}
-                // defaultValue={100}
-                min={0}
-                max={100}
-                addonAfter={"%"}
-                step={5}
-            />
-        </Form.Item>
-    );
-
-    const tyreConditionData = [
-        {
-            key: "Departure",
-            front_l: <NumberInputTableItem label="departure_front_l" />,
-            front_r: <NumberInputTableItem label="departure_front_r" />,
-            back_l: <NumberInputTableItem label="departure_back_l" />,
-            back_ll: <NumberInputTableItem label="departure_back_ll" />,
-            back_r: <NumberInputTableItem label="departure_back_r" />,
-            back_rr: <NumberInputTableItem label="departure_back_rr" />,
-            spare: <NumberInputTableItem label="departure_spare" />,
-        },
-        {
-            key: "Arrival",
-            front_l: <NumberInputTableItem label="arrival_front_l" />,
-            front_r: <NumberInputTableItem label="arrival_front_r" />,
-            back_l: <NumberInputTableItem label="arrival_back_l" />,
-            back_ll: <NumberInputTableItem label="arrival_back_ll" />,
-            back_r: <NumberInputTableItem label="arrival_back_r" />,
-            back_rr: <NumberInputTableItem label="arrival_back_rr" />,
-            spare: <NumberInputTableItem label="arrival_spare" />,
-        },
-    ];
 
     // for materials table
     const [materialWeightData, setMaterialWeightData] = useState([
@@ -311,6 +289,52 @@ const S001DriverForm = () => {
     };
 
 
+    // stuff for tyre condition table
+    const NumberInputTableItem = ({ label }) => (
+        <Form.Item name={label} noStyle>
+            <InputNumber
+                style={{ width: 100 }}
+                // defaultValue={100}
+                min={0}
+                max={100}
+                addonAfter={"%"}
+                step={5}
+            />
+        </Form.Item>
+    );
+
+    const tyreConditionData = [
+        {
+            key: "Departure",
+            front_l: <NumberInputTableItem label="departure_front_l" />,
+            front_r: <NumberInputTableItem label="departure_front_r" />,
+            back_l: <NumberInputTableItem label="departure_back_l" />,
+            back_ll: <NumberInputTableItem label="departure_back_ll" />,
+            back_r: <NumberInputTableItem label="departure_back_r" />,
+            back_rr: <NumberInputTableItem label="departure_back_rr" />,
+            spare: <NumberInputTableItem label="departure_spare" />,
+        },
+        {
+            key: "Arrival",
+            front_l: <NumberInputTableItem label="arrival_front_l" />,
+            front_r: <NumberInputTableItem label="arrival_front_r" />,
+            back_l: <NumberInputTableItem label="arrival_back_l" />,
+            back_ll: <NumberInputTableItem label="arrival_back_ll" />,
+            back_r: <NumberInputTableItem label="arrival_back_r" />,
+            back_rr: <NumberInputTableItem label="arrival_back_rr" />,
+            spare: <NumberInputTableItem label="arrival_spare" />,
+        },
+    ];
+
+    // deals with input image
+    const normFile = (e) => {
+        if (Array.isArray(e)) {
+            return e;
+        }
+        return e?.fileList;
+    };
+
+
     return (
         <div>
             {contextHolder}
@@ -323,16 +347,7 @@ const S001DriverForm = () => {
                 onFinish={handleFormSubmit}
             >
 
-                {/* <Space size={"large"} align="baseline" >
-                        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                            <Button type="primary" htmlType="submit">
-                                Submit
-                            </Button>
-                        </Form.Item>
-                    </Space>
-
-                    <Divider /> */}
-
+                {/* Truck number and date section */}
                 <Space size={"large"} align="baseline" >
                     <Form.Item label="Truck Number">
                         <Form.Item
@@ -346,7 +361,7 @@ const S001DriverForm = () => {
 
                     <Form.Item label="Date">
                         <Form.Item
-                            name="date"
+                            name="form_date"
                             noStyle
                         // rules={[{ required: true, message: 'Date is required' }]}
                         >
@@ -356,7 +371,7 @@ const S001DriverForm = () => {
                 </Space>
 
                 <Divider />
-
+                {/* Helper and driver section */}
                 <Space size="large" align="baseline">
                     <Form.Item label="Driver">
                         <Form.Item
@@ -398,7 +413,7 @@ const S001DriverForm = () => {
                 </Space>
 
                 <Divider />
-
+                {/* Journey section */}
                 <Space size={"middle"} direction='vertical'>
                     <Space size={"large"} align="baseline" >
                         <Form.Item label="Factory Departure Time">
@@ -438,7 +453,7 @@ const S001DriverForm = () => {
                 </Space>
 
                 <Divider />
-
+                {/* Fuel guage section */}
                 <Space size={"large"} align="baseline" >
                     <Form.Item label="Fuel guage before departure">
                         <Form.Item
@@ -472,65 +487,26 @@ const S001DriverForm = () => {
                 </Space>
 
                 <Divider />
-
+                {/* Truck contents section */}
                 <Space>
                     <Table
                         dataSource={truckContentData}
                         columns={truckContentsColumn}
                         pagination={false}
+                        bordered={true}
                     />
                 </Space>
 
                 <Divider />
-
+                {/* Tyre condition section */}
                 <Space>
                     <Table
                         dataSource={tyreConditionData}
                         columns={tyreConditionColumn}
                         pagination={false}
+                        bordered={true}
                     />
                 </Space>
-
-                <Divider />
-
-                <Space direction='inline' size={"large"} align="baseline">
-                    <Form.Item label="Toll paid">
-                        <Form.Item
-                            name="toll_paid"
-                            noStyle
-                        // rules={[{ required: true, message: 'Toll paid is required' }]}
-                        >
-                            <InputNumber
-                                addonBefore={selectBeforeCurrency}
-                            />
-                        </Form.Item>
-                    </Form.Item>
-
-                    <Form.Item label="Weight paid">
-                        <Form.Item
-                            name="weight_paid"
-                            noStyle
-                        // rules={[{ required: true, message: 'Weight paid is required' }]}
-                        >
-                            <InputNumber
-                                addonBefore={selectBeforeCurrency}
-                            />
-                        </Form.Item>
-                    </Form.Item>
-
-                    <Form.Item label="Other costs">
-                        <Form.Item
-                            name="other_costs"
-                            noStyle
-                        >
-                            <InputNumber
-                                addonBefore={selectBeforeCurrency}
-                            />
-                        </Form.Item>
-                    </Form.Item>
-
-                </Space>
-
 
                 <Divider />
                 {/* Expenses section */}
@@ -719,9 +695,101 @@ const S001DriverForm = () => {
                 </Space>
 
                 <Divider />
+                {/* Guard Signature by image */}
+                <Space direction={"vertical"}>
+                    Material Received by at Factory:
+                    <Form.Item
+                        label="GuardUpload"
+                        name="guard_upload"
+                        valuePropName="fileList"
+                        getValueFromEvent={normFile}
+                    // rules={[{ required: true, message: 'Please upload an image' }]}
+                    >
+                        <Upload action="/upload" listType="picture-card">
+                            <div>
+                                <PlusOutlined />
+                                <div style={{ marginTop: 8 }}>Upload</div>
+                            </div>
+                        </Upload>
+                    </Form.Item>
+                </Space>
+
+                <Divider />
+                <p>For Official Finance Use</p>
+                <Space direction={"vertical"} size={"large"}>
+                    <Space direction={"inline"} size={"large"}>
+                        <Form.Item label="Total payment">
+                            <Form.Item
+                                name="total_payment"
+                                noStyle
+                            // rules={[{ required: true, message: 'Total payment is required' }]}
+                            >
+                                <InputNumber
+                                    min={0}
+                                    addonBefore={selectBeforeCurrency}
+                                />
+                            </Form.Item>
+                        </Form.Item>
+
+                        <Form.Item label="Date">
+                            <Form.Item
+                                name="finance_office_date"
+                                noStyle
+                            // rules={[{ required: true, message: 'Date is required' }]}
+                            >
+                                <DatePicker format={"MM/DD/YYYY"} />
+                            </Form.Item>
+                        </Form.Item>
+
+                        <Form.Item label="Cash">
+                            <Form.Item
+                                name="Cash"
+                                noStyle
+                            // rules={[{ required: true, message: 'Total payment is required' }]}
+                            >
+                                <InputNumber
+                                    min={0}
+                                    addonBefore={selectBeforeCurrency}
+                                />
+                            </Form.Item>
+                        </Form.Item>
+
+                        <Form.Item label="Check number">
+                            <Form.Item
+                                name="check_number"
+                                noStyle
+                            // rules={[{ required: true, message: 'Total payment is required' }]}
+                            >
+                                <InputNumber
+                                    min={0}
+                                    addonBefore={selectBeforeCurrency}
+                                />
+                            </Form.Item>
+                        </Form.Item>
+                    </Space>
+
+                    <Space direction="inline">
+                        <Form.Item label="Payment Issued by">
+                            <Form.Item
+                                name="payment_issed_by_finance_office"
+                                valuePropName="fileList"
+                                getValueFromEvent={normFile}
+                            // rules={[{ required: true, message: 'Please upload an image' }]}
+                            >
+                                <Upload action="/upload" listType="picture-card">
+                                    <div>
+                                        <PlusOutlined />
+                                        <div style={{ marginTop: 8 }}>Upload</div>
+                                    </div>
+                                </Upload>
+                            </Form.Item>
+                        </Form.Item>
+                    </Space>
+                </Space>
 
 
-
+                <Divider />
+                {/* Submit button */}
                 <Space size={"large"} align="baseline" >
                     <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                         <Button type="primary" htmlType="submit">
@@ -737,4 +805,4 @@ const S001DriverForm = () => {
 }
 
 
-export default S001DriverForm;
+export default S001FullForm;
