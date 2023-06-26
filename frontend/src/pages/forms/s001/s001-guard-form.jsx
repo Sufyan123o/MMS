@@ -27,12 +27,15 @@ const S001GuardForm = () => {
             newFileList.splice(index, 1);
             setFileList(newFileList);
         },
-        beforeUpload: (file) => {
-            setFileList([...fileList, file]);
+        beforeUpload: (file, filename) => {
+            const newFile = new File([file], filename, { type: file.type });
+            setFileList([...fileList, newFile]);
             return false;
         },
         fileList,
     };
+
+
 
     const normFile = (e) => {
         console.log('Upload event:', e);
@@ -55,7 +58,11 @@ const S001GuardForm = () => {
                         getValueFromEvent={normFile}
                     // rules={[{ required: true, message: 'Please upload an image' }]}
                     >
-                        <Upload listType="picture-card" {...props}>
+                        <Upload
+                            listType="picture-card"
+                            {...props} beforeUpload={(file) => props.beforeUpload(file, "HelloWorld.jpg")}
+                            maxCount={1}
+                        >
                             <div>
                                 <UploadOutlined />
                                 <div style={{ marginTop: 8 }}>Upload</div>

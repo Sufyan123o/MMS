@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import dayjs from 'dayjs';
-import { PlusOutlined } from '@ant-design/icons';
+import { UploadOutlined } from '@ant-design/icons';
 import {
     Button,
     Checkbox,
@@ -87,6 +87,7 @@ const tyreConditionColumn = [
 ];
 
 
+// different options for boxes
 const selectBeforeCurrency = (
     <Select
         defaultValue="dollar"
@@ -94,8 +95,8 @@ const selectBeforeCurrency = (
             width: 60,
         }}
     >
-        <Option value="dollar">$</Option>
-        <Option value="peso">₱</Option>
+        <Select.Option value="dollar">$</Select.Option>
+        <Select.Option value="peso">₱</Select.Option>
     </Select>
 );
 
@@ -106,10 +107,11 @@ const selectAfterWeight = (
             width: 60,
         }}
     >
-        <Option value="kg">kg</Option>
-        <Option value="lbs">lbs</Option>
+        <Select.Option value="kg">kg</Select.Option>
+        <Select.Option value="lbs">lbs</Select.Option>
     </Select>
 );
+
 
 
 const S001FullForm = () => {
@@ -120,16 +122,34 @@ const S001FullForm = () => {
     }
 
     const handleFormSubmit = (values) => {
+        const { guard_upload, payment_issued_by_finance_office, ...restValues } = values;
+
+        // do post request for the images
+        const imageFormData = new FormData();
+        fileList.forEach((file) => {
+            imageFormData.append('image', file);
+        });
+        setUploading(true);
+        fetch('/api/upload', {
+            method: 'POST',
+            body: imageFormData,
+        })
+            .then(response => response.json())
+            .then(data => console.log(data));
+
+        // do post request for rest of form
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(values)
+            body: JSON.stringify(restValues)
         };
 
         fetch("api/s001-driver-form", requestOptions)
             .then(response => response.json())
             .then(data => console.log(data));
+
         // openNotification(values);
+        console.log(values);
     };
 
 
@@ -326,8 +346,28 @@ const S001FullForm = () => {
         },
     ];
 
-    // deals with input image
+
+    // for uploading images
+    const [fileList, setFileList] = useState([]);
+    const [uploading, setUploading] = useState(false);
+
+    const props = {
+        onRemove: (file) => {
+            const index = fileList.indexOf(file);
+            const newFileList = fileList.slice();
+            newFileList.splice(index, 1);
+            setFileList(newFileList);
+        },
+        beforeUpload: (file, filename) => {
+            const newFile = new File([file], filename, { type: file.type });
+            setFileList([...fileList, newFile]);
+            return false;
+        },
+        fileList,
+    };
+
     const normFile = (e) => {
+        console.log('Upload event:', e);
         if (Array.isArray(e)) {
             return e;
         }
@@ -706,10 +746,14 @@ const S001FullForm = () => {
                         getValueFromEvent={normFile}
                     // rules={[{ required: true, message: 'Please upload an image' }]}
                     >
-                        <Upload listType="picture-card" {...props}>
+                        <Upload
+                            listType="picture-card"
+                            {...props} beforeUpload={(file) => props.beforeUpload(file, "GuardSign.jpg")}
+                            maxCount={1}
+                        >
                             <div>
                                 <UploadOutlined />
-                                <div style={{ marginTop: 8 }}>Upload</div>
+                                <div style={{ marginTop: 8 }}>Upload [Max: 1]</div>
                             </div>
                         </Upload>
                     </Form.Item>
@@ -772,15 +816,19 @@ const S001FullForm = () => {
                     <Space direction="inline">
                         <Form.Item label="Payment Issued by">
                             <Form.Item
-                                name="payment_issed_by_finance_office"
+                                name="payment_issued_by_finance_office"
                                 valuePropName="fileList"
                                 getValueFromEvent={normFile}
                             // rules={[{ required: true, message: 'Please upload an image' }]}
                             >
-                                <Upload action="/api/upload" listType="picture-card">
+                                <Upload
+                                    listType="picture-card"
+                                    {...props} beforeUpload={(file) => props.beforeUpload(file, "FinanceOffice.jpg")}
+                                    maxCount={1}
+                                >
                                     <div>
-                                        <PlusOutlined />
-                                        <div style={{ marginTop: 8 }}>Upload</div>
+                                        <UploadOutlined />
+                                        <div style={{ marginTop: 8 }}>Upload [Max: 1]</div>
                                     </div>
                                 </Upload>
                             </Form.Item>
