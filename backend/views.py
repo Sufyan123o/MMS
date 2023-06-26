@@ -6,14 +6,7 @@ from flask import current_app as app
 
 api_blueprint = Blueprint('api', __name__)
 
-@api_blueprint.route('/api/s001-driver-form', methods=['POST'])
-def s001_driver_form():
-    try:
-        data = request.get_json()
-        print(data)
-        return jsonify({'message': 'Data received successfully'}), 200
-    except Exception as e:
-        return jsonify({'message': 'Error occurred', 'error': str(e)}), 500
+############################## File Upload #####################################
 
 #Chekcs if file is allowed
 def allowed_file(filename, app):
@@ -33,15 +26,26 @@ def upload_file():
         return jsonify({"error": "No selected file"}), 400
     
     if file and allowed_file(file.filename, app):
-        filename = datetime.now().strftime('%Y%m%d%H%M%S') #uses date and time as file name
-        extension = secure_filename(file.filename).rsplit('.', 1)[1].lower()
-        filename = "{}.{}".format(filename, extension)
+        filename = secure_filename(file.filename) # Keep the original file name
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename)) #saves file to upload folder
         # Return a JSON response with the URL of the uploaded file
         return jsonify({"url": os.path.join(app.config['UPLOAD_FOLDER'], filename)}), 200
 
     # If the file is not allowed, return a JSON error message
     return jsonify({"error": "File not allowed"}), 400
+
+
+######################################## S001 #########################################
+
+@api_blueprint.route('/api/s001-driver-form', methods=['POST'])
+def s001_driver_form():
+    try:
+        data = request.get_json()
+        print(data)
+        return jsonify({'message': 'Data received successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': 'Error occurred', 'error': str(e)}), 500
+
 
 @api_blueprint.route('/api/s001-finance-form', methods=['POST'])
 def s001_finance_form():
@@ -56,7 +60,67 @@ def s001_finance_form():
 def s001_janghir_sign():
     pass
 
+################################### S002 #########################################
 
+@api_blueprint.route('/api/s002-supplier-info-form', methods=['POST'])
+def s002_supplier_info_form():
+    try:
+        data = request.get_json()
+        print(data)
+        return jsonify({'message': 'Data received successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': 'Error occurred', 'error': str(e)}), 500
+
+################################### S003 #########################################
+
+@api_blueprint.route('/api/s003--driver-entry-form', methods=['POST'])
+def s003_driver_entry_form():
+    try:
+        data = request.get_json()
+        print(data)
+        return jsonify({'message': 'Data received successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': 'Error occurred', 'error': str(e)}), 500
+
+@api_blueprint.route('/api/s003--finance-entry-form', methods=['POST'])
+def s003_finance_entry_form():
+    try:
+        data = request.get_json()
+        print(data)
+        return jsonify({'message': 'Data received successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': 'Error occurred', 'error': str(e)}), 500
+
+################################### S004 #########################################
+
+@api_blueprint.route('/api/s004--driver-exit-form', methods=['POST'])
+def s004_driver_exit_form():
+    try:
+        data = request.get_json()
+        print(data)
+        return jsonify({'message': 'Data received successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': 'Error occurred', 'error': str(e)}), 500
+
+@api_blueprint.route('/api/s004--finance-exit-form', methods=['POST'])
+def s004_finance_exit_form():
+    try:
+        data = request.get_json()
+        print(data)
+        return jsonify({'message': 'Data received successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': 'Error occurred', 'error': str(e)}), 500
+
+@api_blueprint.route('/api/s004--forklift-exit-form', methods=['POST'])
+def s004_forklift_exit_form():
+    try:
+        data = request.get_json()
+        print(data)
+        return jsonify({'message': 'Data received successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': 'Error occurred', 'error': str(e)}), 500
+
+###################### Test ##########################
 
 # This defines a route for the '/api/test' URL. It returns a simple JSON response for testing.
 @api_blueprint.route('/api/test')
