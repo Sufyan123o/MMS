@@ -1,38 +1,41 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app as app
 from werkzeug.utils import secure_filename
 import os
-from datetime import datetime
-from flask import current_app as app
 
 api_blueprint = Blueprint('api', __name__)
 
 ############################## File Upload #####################################
 
-#Chekcs if file is allowed
+# Checks if file is allowed
 def allowed_file(filename, app):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-
-#Upload Pictures Method
+# Upload Pictures Method
 @api_blueprint.route('/api/upload', methods=['POST'])
 def upload_file():
-    #Import the current flask app running as 'app'
-    if 'image' not in request.files: #check that request didnt contain a file upload as expected 
+    if 'image' not in request.files:
         return jsonify({"error": "No file part"}), 400
-    file = request.files['image']
-    if file.filename == '': # Check if a file was actually selected and uploaded
-        # If not, return a JSON error message
-        return jsonify({"error": "No selected file"}), 400
-    
-    if file and allowed_file(file.filename, app):
-        filename = secure_filename(file.filename) # Keep the original file name
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename)) #saves file to upload folder
-        # Return a JSON response with the URL of the uploaded file
-        return jsonify({"url": os.path.join(app.config['UPLOAD_FOLDER'], filename)}), 200
 
-    # If the file is not allowed, return a JSON error message
-    return jsonify({"error": "File not allowed"}), 400
+    urls = []  #store all the urls here
+    files = request.files.getlist("image")  # get the list of files from 'image'
+
+    for file in files:
+        if file.filename == '':  # Check if a file was actually selected and uploaded
+            return jsonify({"error": "No selected file"}), 400
+        
+        if file and allowed_file(file.filename, app):
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)  # save file to upload folder
+            urls.append(file_path)  # append the file_path to urls list
+
+        else:
+            # If the file is not allowed, return a JSON error message
+            return jsonify({"error": "File not allowed"}), 400
+    
+    # Return a JSON response with the URL of the uploaded files
+    return jsonify({"urls": urls}), 200
 
 
 ######################################## S001 #########################################
