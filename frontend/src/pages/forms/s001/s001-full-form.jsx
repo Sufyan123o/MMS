@@ -120,16 +120,16 @@ const S001FullForm = () => {
     }
 
     const handleFormSubmit = (values) => {
-        // const requestOptions = {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify(values)
-        // };
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(values)
+        };
 
-        // fetch("api/s001-driver-form", requestOptions)
-        //     .then(response => response.json())
-        //     .then(data => console.log(data));
-        openNotification(values);
+        fetch("api/s001-driver-form", requestOptions)
+            .then(response => response.json())
+            .then(data => console.log(data));
+        // openNotification(values);
     };
 
 
@@ -696,18 +696,19 @@ const S001FullForm = () => {
 
                 <Divider />
                 {/* Guard Signature by image */}
+                {/* NEED TO ADD POST REQ FOR IMAGE */}
                 <Space direction={"vertical"}>
                     Material Received by at Factory:
                     <Form.Item
-                        label="GuardUpload"
+                        label="Guard Upload"
                         name="guard_upload"
                         valuePropName="fileList"
                         getValueFromEvent={normFile}
                     // rules={[{ required: true, message: 'Please upload an image' }]}
                     >
-                        <Upload action="/upload" listType="picture-card">
+                        <Upload listType="picture-card" {...props}>
                             <div>
-                                <PlusOutlined />
+                                <UploadOutlined />
                                 <div style={{ marginTop: 8 }}>Upload</div>
                             </div>
                         </Upload>
@@ -776,7 +777,7 @@ const S001FullForm = () => {
                                 getValueFromEvent={normFile}
                             // rules={[{ required: true, message: 'Please upload an image' }]}
                             >
-                                <Upload action="/upload" listType="picture-card">
+                                <Upload action="/api/upload" listType="picture-card">
                                     <div>
                                         <PlusOutlined />
                                         <div style={{ marginTop: 8 }}>Upload</div>

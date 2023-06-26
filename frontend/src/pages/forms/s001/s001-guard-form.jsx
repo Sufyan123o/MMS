@@ -1,43 +1,63 @@
 import React, { useState } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Upload, Form } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import { Button, Upload, Form, Space } from 'antd';
 
 const S001GuardForm = () => {
-    const handleSubmit = (values) => {
-        const formData = new FormData();
-        formData.append('image', values.upload[0].originFileObj);
+    const [fileList, setFileList] = useState([]);
+    const [uploading, setUploading] = useState(false);
 
-        fetch('api/upload', {
+    const handleSubmit = () => {
+        const formData = new FormData();
+        fileList.forEach((file) => {
+            formData.append('image', file);
+        });
+        setUploading(true);
+        fetch('/api/upload', {
             method: 'POST',
             body: formData,
         })
             .then(response => response.json())
             .then(data => console.log(data));
-
     };
 
+    const props = {
+        onRemove: (file) => {
+            const index = fileList.indexOf(file);
+            const newFileList = fileList.slice();
+            newFileList.splice(index, 1);
+            setFileList(newFileList);
+        },
+        beforeUpload: (file) => {
+            setFileList([...fileList, file]);
+            return false;
+        },
+        fileList,
+    };
 
     const normFile = (e) => {
+        console.log('Upload event:', e);
         if (Array.isArray(e)) {
             return e;
         }
         return e?.fileList;
     };
+
+
     return (
         <div>
             <Form onFinish={handleSubmit}>
                 <Space direction={"vertical"}>
                     Material Received by at Factory:
                     <Form.Item
-                        label="GuardUpload"
+                        label="Guard Upload"
                         name="guard_upload"
                         valuePropName="fileList"
                         getValueFromEvent={normFile}
                     // rules={[{ required: true, message: 'Please upload an image' }]}
                     >
-                        <Upload action="/upload" listType="picture-card">
+                        <Upload listType="picture-card" {...props}>
                             <div>
-                                <PlusOutlined />
+                                <UploadOutlined />
                                 <div style={{ marginTop: 8 }}>Upload</div>
                             </div>
                         </Upload>
