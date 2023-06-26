@@ -91,7 +91,16 @@ const S001DriverForm = () => {
     }
 
     const handleFormSubmit = (values) => {
-        openNotification(values);
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(values)
+        };
+
+        fetch("api/s001-driver-form", requestOptions)
+            .then(response => response.json())
+            .then(data => console.log(data));
+
     };
 
 
