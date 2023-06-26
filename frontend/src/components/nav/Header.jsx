@@ -1,4 +1,4 @@
-import { HomeTwoTone, EditTwoTone, CheckCircleTwoTone } from '@ant-design/icons';
+import { HomeTwoTone, TagsTwoTone, CheckCircleTwoTone } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
@@ -10,9 +10,9 @@ const menuItems = [
         label: <Link to="/">Home</Link>
     },
     {
-        key: 'r',
-        icon: <EditTwoTone />,
-        label: <Link to="/register">Register</Link>
+        key: '2',
+        icon: <TagsTwoTone />,
+        label: <Link to="/s002">S002</Link>
 
     },
     {

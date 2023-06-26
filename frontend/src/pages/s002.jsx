@@ -3,13 +3,11 @@ import Sidebar, { getItem } from '../components/Sidebar';
 import { NavLink, Outlet, Link } from 'react-router-dom';
 import { Button } from 'antd';
 import './forms.css';
-import S001DriverForm from './forms/s001/s001-driver-form';
-import S001GuardForm from './forms/s001/s001-guard-form';
-import S001FullForm from './forms/s001/s001-full-form';
+import S002FullForm from './forms/s002/s002-full-form';
 
 
 
-const S001 = () => {
+const S002 = () => {
     // creating new form button
     const onClickAddButton = () => {
         const currentDate = new Date();
@@ -58,12 +56,11 @@ const S001 = () => {
                 <Sidebar sidebarItems={sidebarItems} />
             </div>
             <div className="content">
-                {/* {displayForm && <S001DriverForm />} */}
-                {/* <S001GuardForm /> */}
-                <S001FullForm />
+
+                <S002FullForm />
             </div>
         </div>
     );
 }
 
-export default S001;
+export default S002;
