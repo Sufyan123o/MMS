@@ -7,34 +7,41 @@ api_blueprint = Blueprint('api', __name__)
 ############################## File Upload #####################################
 
 # Checks if file is allowed
-def allowed_file(filename, app):
+def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-# Upload Pictures Method
+#Upload Method
 @api_blueprint.route('/api/upload', methods=['POST'])
 def upload_file():
     if 'image' not in request.files:
         return jsonify({"error": "No file part"}), 400
 
-    urls = []  #store all the urls here
-    files = request.files.getlist("image")  # get the list of files from 'image'
+    formType = request.args.get('formType', '')  #get formType from the query parameter
+    user = request.args.get('user', '')  #get user from the query parameter
+
+    urls = []
+    files = request.files.getlist("image")  #get  list of files from 'image'
 
     for file in files:
-        if file.filename == '':  # Check if a file was actually selected and uploaded
+        if file.filename == '':  #Check if file was acc selected and uploaded
             return jsonify({"error": "No selected file"}), 400
         
-        if file and allowed_file(file.filename, app):
+        if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            #create directory path
+            directory_path = os.path.join(app.config['UPLOAD_FOLDER'], formType, user)
+            #make sure the directory exists
+            if not os.path.exists(directory_path):
+                os.makedirs(directory_path)
+            # complete file path
+            file_path = os.path.join(directory_path, filename)
             file.save(file_path)  # save file to upload folder
             urls.append(file_path)  # append the file_path to urls list
-
         else:
-            # If the file is not allowed, return a JSON error message
+            #If the file is not allowed, return a JSON error message
             return jsonify({"error": "File not allowed"}), 400
-    
-    # Return a JSON response with the URL of the uploaded files
+    #Return a JSON response with the URL of the uploaded files
     return jsonify({"urls": urls}), 200
 
 
